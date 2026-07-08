@@ -30,6 +30,9 @@
     },
     "entity": {
         "binary_sensor": {
+            "closed_opened": {
+                "name": "Door"
+            },
             "low_battery": {
                 "name": "Battery"
             }
@@ -40,6 +43,9 @@
             }
         },
         "number": {
+            "auto_lock_time": {
+                "name": "Auto-lock time"
+            },
             "brightness": {
                 "name": "Brightness"
             },
@@ -161,6 +167,9 @@
         "switch": {
             "antifreeze": {
                 "name": "Antifreeze"
+            },
+            "automatic_lock": {
+                "name": "Auto Lock"
             },
             "carbon_dioxide_alarm_switch": {
                 "name": "Alarm enabled"

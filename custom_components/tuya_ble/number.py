@@ -216,6 +216,25 @@ class TuyaBLECategoryNumberMapping:
 
 
 mapping: dict[str, TuyaBLECategoryNumberMapping] = {
+    "ms": TuyaBLECategoryNumberMapping(
+        products={
+            "kgsovyg1": [  # Smart Lock
+                TuyaBLENumberMapping(
+                    dp_id=36,
+                    description=NumberEntityDescription(
+                        key="auto_lock_time",
+                        icon="mdi:lock-clock",
+                        device_class=NumberDeviceClass.DURATION,
+                        native_max_value=120,
+                        native_min_value=0,
+                        native_unit_of_measurement=UnitOfTime.SECONDS,
+                        native_step=1,
+                        entity_category=EntityCategory.CONFIG,
+                    ),
+                ),
+            ],
+        },
+    ),
     "co2bj": TuyaBLECategoryNumberMapping(
         products={
             "59s19z5m": [  # CO2 Detector

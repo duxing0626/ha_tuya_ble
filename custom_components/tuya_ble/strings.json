@@ -90,8 +90,16 @@
       }
     },
     "binary_sensor": {
+      "closed_opened": {
+        "name": "Door"
+      },
       "low_battery": {
         "name": "[%key:component::sensor::entity_component::battery::name%]"
+      }
+    },
+    "number": {
+      "auto_lock_time": {
+        "name": "Auto-lock time"
       }
     },
     "sensor": {
@@ -159,8 +167,11 @@
       }
     },
     "switch": {
+      "automatic_lock": {
+        "name": "Auto Lock"
+      },
       "programming_mode": {
-        "name": "Programming Mode" 
+        "name": "Programming Mode"
       },
       "programming_switch": {
         "name": "Programming Switch"

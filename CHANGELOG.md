@@ -76,6 +76,12 @@ and this project adheres to [Semantic Versioning].
 
 ## [0.1.9] - 2026-07-08
 
+### Added
+
+- Expanded Smart Lock (category `ms`, product `kgsovyg1`) support: battery
+  state, lock alarm and door-contact sensors, plus auto-lock enable switch and
+  auto-lock time control.
+
 ### Fixed
 
 - Restored compatibility with current Home Assistant releases (2025.x / 2026.x):
