@@ -47,7 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await device.initialize()
     product_info = get_device_product_info(device)
 
-    coordinator = TuyaBLECoordinator(hass, device)
+    coordinator = TuyaBLECoordinator(hass, entry, device)
 
     '''
     try:
@@ -57,7 +57,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             f"Could not communicate with Tuya BLE device with address {address}"
         ) from ex
     '''
-    hass.add_job(device.update())
+    entry.async_create_background_task(
+        hass, device.update(), f"tuya_ble[{address}] initial update"
+    )
 
     @callback
     def _async_update_ble(

@@ -74,6 +74,30 @@ and this project adheres to [Semantic Versioning].
 
 - Improved connection stability.
 
+## [0.1.9] - 2026-07-08
+
+### Fixed
+
+- Restored compatibility with current Home Assistant releases (2025.x / 2026.x):
+  - Decoupled from the rewritten core Tuya integration. The Tuya IoT login
+    constants and country list (`TUYA_COUNTRIES`) are now bundled locally
+    instead of being imported from `homeassistant.components.tuya.const`,
+    which no longer exposes them after the QR-code login rewrite.
+  - Replaced removed constants `TEMP_CELSIUS`, `TIME_MINUTES`, `TIME_SECONDS`
+    and `VOLUME_MILLILITERS` with the `UnitOf*` enums.
+  - Replaced the removed `homeassistant.backports.enum` import.
+  - Migrated the options flow from the deprecated `OptionsFlowWithConfigEntry`
+    to `OptionsFlow` (explicitly setting `config_entry` is removed in HA 2025.12).
+  - Passed `config_entry` to the `DataUpdateCoordinator`.
+  - Replaced the deprecated `hass.add_job(coroutine)` with
+    `ConfigEntry.async_create_background_task`.
+
+### Changed
+
+- `tuya` moved from `dependencies` to `after_dependencies` in the manifest, so
+  the core Tuya integration is no longer required to be set up.
+
+
 ## [0.1.8] - 2023-07-09
 
 ### Added
