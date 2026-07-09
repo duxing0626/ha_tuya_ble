@@ -12,37 +12,41 @@ from tuya_iot import AuthType
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
-    OptionsFlowWithConfigEntry,
+    OptionsFlow,
 )
 from homeassistant.components.bluetooth import (
     BluetoothServiceInfoBleak,
     async_discovered_service_info,
 )
-from homeassistant.const import CONF_ADDRESS
+from homeassistant.const import CONF_ADDRESS, CONF_DEVICE_ID
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowHandler, FlowResult
 
-from homeassistant.components.tuya.const import (
+from .tuya_ble import SERVICE_UUID, TuyaBLEDeviceCredentials
+
+from .const import (
     CONF_ACCESS_ID,
     CONF_ACCESS_SECRET,
     CONF_APP_TYPE,
     CONF_AUTH_TYPE,
+    CONF_CATEGORY,
     CONF_COUNTRY_CODE,
+    CONF_DEVICE_NAME,
     CONF_ENDPOINT,
+    CONF_LOCAL_KEY,
     CONF_PASSWORD,
+    CONF_PRODUCT_ID,
+    CONF_PRODUCT_MODEL,
+    CONF_PRODUCT_NAME,
     CONF_USERNAME,
+    CONF_UUID,
+    DOMAIN,
     SMARTLIFE_APP,
     TUYA_COUNTRIES,
     TUYA_RESPONSE_CODE,
     TUYA_RESPONSE_MSG,
     TUYA_RESPONSE_SUCCESS,
     TUYA_SMART_APP,
-)
-
-from .tuya_ble import SERVICE_UUID, TuyaBLEDeviceCredentials
-
-from .const import (
-    DOMAIN,
 )
 from .devices import TuyaBLEData, get_device_readable_name
 from .cloud import HASSTuyaBLEDeviceManager
@@ -151,12 +155,8 @@ def _show_login_form(
     )
 
 
-class TuyaBLEOptionsFlow(OptionsFlowWithConfigEntry):
+class TuyaBLEOptionsFlow(OptionsFlow):
     """Handle a Tuya BLE options flow."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        super().__init__(config_entry)
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -239,11 +239,71 @@ class TuyaBLEConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Handle the user step."""
+        """Let the user choose between cloud login and manual credentials."""
+        return self.async_show_menu(
+            step_id="user",
+            menu_options=["cloud", "manual"],
+        )
+
+    async def async_step_cloud(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle the cloud login path."""
         if self._manager is None:
             self._manager = HASSTuyaBLEDeviceManager(self.hass, self._data)
         await self._manager.build_cache()
         return await self.async_step_login()
+
+    async def async_step_manual(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle manual entry of device credentials (fully offline, no cloud)."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            address: str = user_input[CONF_ADDRESS]
+            await self.async_set_unique_id(address, raise_on_progress=False)
+            self._abort_if_unique_id_configured()
+            options = {
+                CONF_ADDRESS: address,
+                CONF_DEVICE_ID: user_input[CONF_DEVICE_ID],
+                CONF_UUID: user_input[CONF_UUID],
+                CONF_LOCAL_KEY: user_input[CONF_LOCAL_KEY],
+                CONF_CATEGORY: user_input[CONF_CATEGORY],
+                CONF_PRODUCT_ID: user_input[CONF_PRODUCT_ID],
+                CONF_DEVICE_NAME: user_input.get(CONF_DEVICE_NAME, ""),
+                CONF_PRODUCT_NAME: user_input.get(CONF_PRODUCT_NAME, ""),
+                CONF_PRODUCT_MODEL: user_input.get(CONF_PRODUCT_MODEL, ""),
+            }
+            title = user_input.get(CONF_DEVICE_NAME) or f"Tuya BLE {address}"
+            return self.async_create_entry(
+                title=title,
+                data={CONF_ADDRESS: address},
+                options=options,
+            )
+
+        default_address = ""
+        if self._discovery_info is not None:
+            default_address = self._discovery_info.address
+
+        schema = vol.Schema(
+            {
+                vol.Required(CONF_ADDRESS, default=default_address): str,
+                vol.Required(CONF_DEVICE_ID): str,
+                vol.Required(CONF_UUID): str,
+                vol.Required(CONF_LOCAL_KEY): str,
+                vol.Required(CONF_CATEGORY): str,
+                vol.Required(CONF_PRODUCT_ID): str,
+                vol.Optional(CONF_DEVICE_NAME, default=""): str,
+                vol.Optional(CONF_PRODUCT_NAME, default=""): str,
+                vol.Optional(CONF_PRODUCT_MODEL, default=""): str,
+            }
+        )
+        return self.async_show_form(
+            step_id="manual",
+            data_schema=schema,
+            errors=errors,
+        )
 
     async def async_step_login(
         self, user_input: dict[str, Any] | None = None
@@ -357,4 +417,4 @@ class TuyaBLEConfigFlow(ConfigFlow, domain=DOMAIN):
         config_entry: ConfigEntry,
     ) -> TuyaBLEOptionsFlow:
         """Get the options flow for this handler."""
-        return TuyaBLEOptionsFlow(config_entry)
+        return TuyaBLEOptionsFlow()

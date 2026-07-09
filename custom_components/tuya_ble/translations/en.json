@@ -25,11 +25,34 @@
                     "username": "Account"
                 },
                 "description": "Tuya BLE requires obtaining encryption key from Tuya cloud. Almost all devices only need to access the cloud once during setup.\n\nRefer to documentation of Tuya integration to retrive the cloud credentials https://www.home-assistant.io/integrations/tuya/\n\nEnter your Tuya credentials."
+            },
+            "manual": {
+                "data": {
+                    "address": "MAC address (as seen by Home Assistant / BLE proxy)",
+                    "device_id": "Device ID",
+                    "uuid": "UUID",
+                    "local_key": "Local key",
+                    "category": "Category",
+                    "product_id": "Product ID",
+                    "device_name": "Device name (optional)",
+                    "product_name": "Product name (optional)",
+                    "product_model": "Product model (optional)"
+                },
+                "description": "Enter the Tuya BLE device credentials directly, without contacting the Tuya cloud. Use this when the device is no longer registered in the cloud but you already have its local key. The device will then work fully offline.\n\nNote: the local key is only valid for the current pairing. If the device has been re-paired since you obtained it, the key will no longer work."
+            },
+            "user": {
+                "menu_options": {
+                    "cloud": "Log in with Tuya cloud (fetch key automatically)",
+                    "manual": "Enter device credentials manually (offline)"
+                }
             }
         }
     },
     "entity": {
         "binary_sensor": {
+            "closed_opened": {
+                "name": "Door"
+            },
             "low_battery": {
                 "name": "Battery"
             }
@@ -40,6 +63,9 @@
             }
         },
         "number": {
+            "auto_lock_time": {
+                "name": "Auto-lock time"
+            },
             "brightness": {
                 "name": "Brightness"
             },
@@ -161,6 +187,9 @@
         "switch": {
             "antifreeze": {
                 "name": "Antifreeze"
+            },
+            "automatic_lock": {
+                "name": "Auto Lock"
             },
             "carbon_dioxide_alarm_switch": {
                 "name": "Alarm enabled"

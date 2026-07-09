@@ -52,6 +52,19 @@ class TuyaBLECategoryBinarySensorMapping:
 
 
 mapping: dict[str, TuyaBLECategoryBinarySensorMapping] = {
+    "ms": TuyaBLECategoryBinarySensorMapping(
+        products={
+            "kgsovyg1": [  # Smart Lock
+                TuyaBLEBinarySensorMapping(
+                    dp_id=40,
+                    description=BinarySensorEntityDescription(
+                        key="closed_opened",
+                        device_class=BinarySensorDeviceClass.DOOR,
+                    ),
+                ),
+            ],
+        },
+    ),
     "wk": TuyaBLECategoryBinarySensorMapping(
         products={
             "drlajpqc": [  # Thermostatic Radiator Valve
