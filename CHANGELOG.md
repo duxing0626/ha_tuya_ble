@@ -78,6 +78,11 @@ and this project adheres to [Semantic Versioning].
 
 ### Added
 
+- Manual credentials setup option: a new "Enter device credentials manually"
+  path in the config flow lets you provide the device address, id, uuid and
+  local key directly, without contacting the Tuya cloud. Useful for fully
+  offline setups or devices removed from the cloud account (also bypasses the
+  MAC-address lookup).
 - Expanded Smart Lock (category `ms`, product `kgsovyg1`) support: battery
   state, lock alarm and door-contact sensors, plus auto-lock enable switch and
   auto-lock time control.
